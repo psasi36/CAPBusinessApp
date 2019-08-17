@@ -1,0 +1,34 @@
+{
+	"xsappname": "CAPBusinessApp",
+	"tenant-mode": "dedicated",
+	"description": "Security profile of CAPBusinessApp application",
+	"scopes": [{
+		"name": "$XSAPPNAME.EndUser",
+		"description": "End User"
+	}, {
+		"name": "$XSAPPNAME.PowerUser",
+		"description": "Power User"
+	}, {
+		"name": "$XSAPPNAME.ODATASERVICEUSER",
+		"description": "oData Service User"
+	}],
+	"role-templates": [{
+		"name": "CAPBusinessApp_PowerUser",
+		"description": "CAPBusinessApp-Power User",
+		"scope-references": [
+			"$XSAPPNAME.PowerUser",
+			"$XSAPPNAME.ODATASERVICEUSER"
+		]
+	}, {
+		"name": "CAPBusinessApp_EndUser",
+		"description": "CAPBusinessApp-End User",
+		"scope-references": [
+			"$XSAPPNAME.EndUser",
+			"$XSAPPNAME.ODATASERVICEUSER"
+		]
+	}, {
+		"name": "UAAUser",
+		"description": "UAA User",
+		"scope-references": ["uaa.user"]
+	}]
+}
