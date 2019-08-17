@@ -1,0 +1,37 @@
+{
+	"welcomeFile": "/cp.portal",
+	"authenticationMethod": "route",
+	"logout": {
+		"logoutEndpoint": "/do/logout"
+	},
+	"routes": [{
+		"source": "/catalog/(.*)",
+		"destination": "CAPBusinessApp_srv_api",
+		"csrfProtection": true,
+		"authenticationType": "xsuaa"
+	}, {
+		"source": "/odata/v4/(.*)",
+		"destination": "CAPBusinessApp_srv_api",
+		"csrfProtection": true,
+		"authenticationType": "xsuaa"
+	}, {
+		"source": "/node/(.*)",
+		"destination": "CAPBusinessApp_srv_api",
+		"csrfProtection": true,
+		"authenticationType": "xsuaa"
+	}, {
+		"source": "/api/(.*)",
+		"destination": "CAPBusinessApp_srv_api",
+		"csrfProtection": true,
+		"authenticationType": "xsuaa"
+	}, {
+		"source": "/images/(.*)",
+		"destination": "CAPBusinessApp_srv_api",
+		"authenticationType": "xsuaa"
+	}, {
+		"source": "^(.*)$",
+		"target": "$1",
+		"service": "html5-apps-repo-rt",
+		"authenticationType": "xsuaa"
+	}]
+}

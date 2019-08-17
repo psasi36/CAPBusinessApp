@@ -1,0 +1,56 @@
+{
+  "namespace": "my.bookshop",
+  "definitions": {
+    "CatalogService": {
+      "kind": "service"
+    },
+    "CatalogService.Books": {
+      "kind": "entity",
+      "@readonly": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "my.bookshop.Books"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.Integer"
+        },
+        "title": {
+          "type": "cds.String"
+        },
+        "stock": {
+          "type": "cds.Integer"
+        }
+      },
+      "$syntax": "projection"
+    },
+    "my.bookshop.Books": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.Integer"
+        },
+        "title": {
+          "type": "cds.String"
+        },
+        "stock": {
+          "type": "cds.Integer"
+        }
+      }
+    }
+  },
+  "version": {
+    "csn": "1.0"
+  },
+  "meta": {
+    "creator": "CDS Compiler v1.15.0"
+  },
+  "$version": "1.0"
+}

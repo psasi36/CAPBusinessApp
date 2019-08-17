@@ -1,0 +1,126 @@
+ID: CAPBusinessApp
+_schema-version: '2.1'
+description: Sample SAP Cloud Application Programming Model
+parameters:
+  deploy_mode: html5-repo
+version: 0.0.1
+modules:
+  - name: CAPBusinessApp_appRouter
+    type: approuter.nodejs
+    path: CAPBusinessApp_appRouter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: CAPBusinessApp_html5_repo_runtime
+      - name: CAPBusinessApp_portal_resources
+      - name: CAPBusinessApp_uaa
+      - name: CAPBusinessApp_dest
+      - name: CAPBusinessApp_theming
+      - name: CAPBusinessApp_srv_api
+        group: destinations
+        properties:
+          name: CAPBusinessApp_srv_api
+          url: '~{url}'
+          forwardAuthToken: true
+  - name: CAPBusinessApp_ui_deployer
+    type: com.sap.html5.application-content
+    path: CAPBusinessApp_ui_deployer
+    parameters:
+      sizeLimit: 16
+    requires:
+      - name: CAPBusinessApp_html5_repo_host
+    build-parameters:
+      requires:
+        - name: CAPBusinessApp_web
+          artifacts:
+            - './*'
+          target-path: resources/web
+  - name: CAPBusinessApp_db
+    type: hdb
+    path: db
+    parameters:
+      memory: 256M
+      disk-quota: 256M
+    requires:
+      - name: CAPBusinessApp_db_hdi_container
+  - name: CAPBusinessApp_srv
+    type: nodejs
+    path: srv
+    parameters:
+      memory: 512M
+      disk-quota: 256M
+    provides:
+      - name: CAPBusinessApp_srv_api
+        properties:
+          url: '${default-url}'
+    requires:
+      - name: CAPBusinessApp_db_hdi_container
+      - name: CAPBusinessApp_uaa
+      - name: CAPBusinessApp_dest
+  - name: CAPBusinessApp_web
+    type: html5
+    path: web
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
+    requires:
+      - name: CAPBusinessApp_srv_api
+        group: destinations
+        properties:
+          name: CAPBusinessApp_srv_api
+          url: '~{url}'
+          forwardAuthToken: true
+  - name: CAPBusinessApp_flp
+    type: com.sap.portal.content
+    path: flp
+    parameters:
+      stack: cflinuxfs3
+      memory: 128M
+      buildpack: 'https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v1.6.39/nodejs-buildpack-cflinuxfs3-v1.6.39.zip'
+    requires:
+      - name: CAPBusinessApp_portal_resources
+      - name: CAPBusinessApp_uaa
+      - name: CAPBusinessApp_html5_repo_host
+      - name: CAPBusinessApp_ui_deployer
+resources:
+  - name: CAPBusinessApp_html5_repo_runtime
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: CAPBusinessApp_html5_repo_host
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+      sizeLimit: 5
+    type: org.cloudfoundry.managed-service
+  - name: CAPBusinessApp_db_hdi_container
+    type: com.sap.xs.hdi-container
+    properties:
+      hdi-container-name: '${service-name}'
+  - name: CAPBusinessApp_uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service-plan: application
+      service: xsuaa
+      config:
+        xsappname: 'CAPBusinessApp_uaa-${space}'
+        tenant-mode: dedicated
+  - name: CAPBusinessApp_dest
+    parameters:
+      service-plan: lite
+      service: destination
+    type: org.cloudfoundry.managed-service
+  - name: CAPBusinessApp_portal_resources
+    parameters:
+      service-plan: standard
+      service: portal
+    type: org.cloudfoundry.managed-service
+  - name: CAPBusinessApp_theming
+    parameters:
+      service: theming
+      service-plan: standard
+    type: org.cloudfoundry.managed-service
